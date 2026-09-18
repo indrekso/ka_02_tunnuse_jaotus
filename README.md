@@ -1,0 +1,1 @@
+# ka_02_tunnuse_jaotus
