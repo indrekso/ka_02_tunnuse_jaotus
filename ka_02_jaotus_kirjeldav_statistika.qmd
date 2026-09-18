@@ -1,0 +1,642 @@
+---
+title: "Tunnuste tüübid ja andmetüübid, tunnuse jaotus ja kirjeldav statistika"
+author: "Indrek Soidla"
+date: last-modified
+format: 
+  html:
+    toc: true
+    toc-title: Sisukord
+    embed-resources: true
+    link-external-newwindow: true
+    css: styles.css
+execute: 
+  echo: true
+  warning: false
+  message: false
+lightbox:
+  match: auto
+  effect: fade
+lang: et
+language: 
+  title-block-author-single: "Autor"
+  title-block-published: "Kuupäev"
+  crossref-fig-title: "Joonis"
+  crossref-tbl-title: "Tabel"
+---
+
+```{r}
+#| label: setup
+#| echo: false
+
+options(width = 120)
+```
+
+## Tunnuste tüübid
+
+Eelmine kord tegelesime juba andmetega ja erinevate tunnuste kokkuvõtlike näitajate (nt aritmeetilise keskmise) arvutamisega, aga ei rääkinud konkreetsemalt tunnuste tüüpidest. (Tuletame meelde, et andmestikus on tunnused reeglina veergudes, ühe veeru andmed on üks tunnus; ridades on indiviidid (küsitlusuuringu puhul enamasti inimindiviidid, aga võivad olla ka nt riigid, nagu esimese teema andmestikes), tunnuse väärtustega kirjeldame neid indiviide.) Tunnuste tüüpides orienteerumine on väga oluline, et osata hiljem andmeanalüüsil valida sobiv analüüsimeetod -- igal meetodil on oma eeldused andmete kohta, mis peaksid olema täidetud, et tulemused oleksid täpsed ja adekvaatselt tõlgendatavad. Sealjuures on igal meetodil omad eeldused ka analüüsitavate tunnuste tüübi kohta, st meetodit saab kasutada ainult teatud tüüpi tunnuste puhul (nt aritmeetilist keskmist saab arvutada ja loogiliselt tõlgendada ainult arvulist tüüpi tunnuste puhul). Enamlevinud tüpoloogia järgi võivad tunnused olla nelja erinevat tüüpi. 
+
+- Kategoriaalsed tunnused
+	- Nominaaltunnus – tunnuse väärtused annavad vaid objekti kirjelduse, aga ei ütle midagi kirjeldatud omaduse intensiivsuse või suuruse kohta (nt sugu, rahvus, perekonnaseis)
+	- Järjestustunnus – tunnuse väärtused on intensiivsuse põhjal järjestatavad, kuid skaalapunktide vahed ei pruugi olla võrdsed (nt haridustase, meeldivuse ja  rahulolu hinnangud)
+- Arvulised tunnused
+	- Diskreetne tunnus – tunnuse väärtusteks saavad olla ainult täisarvulised loendatavad vastusevariandid (nt laste arv peres)
+	- Pidev tunnus – tunnuse väärtusteks võivad olla kõik punktid tunnuse skaalal, sh murdarvud (nt pikkus, kaal, vanus, sissetulek)
+
+Arvulised tunnused erinevad järjestustunnustest selle poolest, et väärtuste vahed on võrreldavad, nt 1 ja 2 erinevus on sama suur kui 2 ja 3 erinevus või 4,4 ja 5,4 erinevus. Järjestustunnuse puhul väärtuste vahed võrreldavad ei ole või ei saa me selles kindlad olla, nt võivad skaalapunktid olla küll kirjeldatud järjestikuste täisarvudega, aga nende tähenduste erinevused ei pruugi olla võrdsed (skaalapunktide sisuline erinevus ei lange kokku arvuliste erinevustega). Selline on näiteks järgmine küsitlusuuringutes kasutatav skaala, kus küsitakse, kuivõrd vastaja nõustub mingi talle esitatava väitega.
+
+- 1 Täiesti nõus
+- 2 Nõus
+- 3 Ei ole poolt ega vastu
+- 4 Ei ole nõus
+- 5 Ei ole üldse nõus
+
+Antud juhul ei saa me olla kindlad, et kõik vastajad tõlgendavad skaalapunktide sisulisi vahesid võrdsetena, st ei saa eeldada, et vastajate jaoks skaalapunktid "Täiesti nõus" ja "Nõus" on teineteisest sama kaugel kui "Nõus" ja "Ei ole poolt ega vastu" (seda enam, et vastajale võidakse esitada ainult sõnalised vastusevariandid, mitte nendega seostuvad koodid, mis on eelkõige andmetöötluse, mitte küsitlemise jaoks). Seega on tegu järjestustunnusega, mis tähendab, et sellise tunnuse puhul pole kohane kasutada arvulist tunnusetüüpi eeldavaid analüüsimeetodeid, nt arvutada aritmeetilist keskmist. Tehniliselt on muidugi võimalik seda teha, aga tulemus ei pruugi olla täpne. Kuivõrd rangelt järjestus- ja arvulistel tunnustel vahet tehakse, sõltub konkreetsest olukorrast (kui suurt täpsust meil analüüsis vaja on) ja muidugi ka ainevaldkonnast, nt psühholoogias see eristus niivõrd range ei ole. Lähtume antud kursuses siiski sotsioloogias pigem levinud arusaamadest, mille järgi nt eelnevalt kirjeldatud skaalaga tunnus on järjestustunnus ja arvulist tunnusetüüpi eeldavaid meetodeid pole sel juhul kohane kasutada. Millised on mingi analüüsimeetodi eeldused, õpime iga meetodi juures eraldi.
+
+NB! Eelnevast võite juba järeldada, et see, mis tüüpi on tunnus, ei sõltu sellest, millisel kujul on andmestikus tunnuse väärtused esitatud - nt on küsitlusuuringute andmestikes tavaline, et tunnustel on arvulised koodid ja nendel koodidel kirjeldused ehk märgendid *(labels)*. Tunnuse tüübi kindlakstegemisel tuleks sellisel juhul eelkõige lähtuda märgendite tähendusest ja sellest, mida tunnus sisuliselt mõõdab. Näiteks soo tunnuse väärtused võivad andmestikus olla 1 ja 2, sealjuures ühega tähistatakse näiteks naisi ja kahega mehi (võib olla ka vastupidi) - see ei tähenda, et tegu oleks arvulise tunnusega. Tegu on nominaaltunnusega, selle määrab tunnuse iseloom ehk mida tunnusega mõõdetakse - mees ja naine ei ole tunnuse iseloomu poolest kuidagi järjestatavad (mees ei ole kuidagi rohkem sugu kui naine ega vastupidi). Kuigi mehed võivad olla näiteks enamasti pikemad kui naised või kaaluda rohkem ja selliste näitajate alusel saab ühes kogumis olevaid mehi ja naisi järjestada, oleks need juba eraldi tunnused (pikkus ja kaal).
+
+## Andmetüübid R-s
+
+R-s on kasutusel mõnevõrra erinevad andmetüübid, oluline on orienteeruda ka neis. R-s on *andme*tüübid ehk nende tüüpidega on kirjeldatavad üksikud väärtused, nende alusel saab omakorda kirjeldada ka tunnuseid ehk andmestiku veerge, sest ühe veeru andmed saavad olla ainult ühte tüüpi. Näiteks võib mingi väärtus olla arvuline *(numeric)*, olles sealjuures kas pidev (*double*, nt 1.453 või 200.01)
+
+```{r}
+typeof(1.453)
+```
+
+või diskreetne ehk täisarvuline (*integer*, nt 1 või 200, R-s tähistataks neid pidevat tüüpi väärtusest eristamiseks 1L ja 200L).
+
+```{r}
+typeof(1L)
+```
+
+Väärtus võib olla veel tekstiline (*character*, nt "puu" või "lill") 
+
+```{r}
+typeof("puu")
+```
+
+või loogiline (*logical*, saab olla ainult kas TRUE või FALSE). 
+
+```{r}
+typeof(TRUE)
+```
+
+Eelmisel korral tegelesime andmestike ehk *data frame*'idega, kus ridades on indiviidid ja veergudes tunnused, sealjuures on kõik read ühepikkused ja veerud ühepikkused (st igas veerus on nii palju väärtuseid kui on indiviide ja igas reas nii palju väärtuseid kui on tunnuseid). Ühe veeru ehk tunnuse väärtused saavad olla vaid ühte tüüpi, seega 
+
+- tunnus, mille kõik väärtused on pidevat tüüpi, on R-s *double*-tüüpi ehk pidev tunnus; 
+- tunnus, mille kõik väärtused on *integer*-tüüpi, on ka ise *integer*-tüüpi ehk diskreetne; 
+- tunnus, mille väärtused on tekstilised *character*-tüüpi, on ka ise *character*-tüüpi tunnus; *character*-tüüpi tunnus on alguses vaadatud neljase tunnuste tüpoloogia järgi alati kategoriaalne tunnus.
+
+### *Data frame*-id ja vektorid
+
+*Data frame* on n-ö ristkülikukujuline andmehulk ehk *tabular data*, sellise andmestikuga puutume kõige enam kokku. R-s puutute ilmselt edaspidi kokku ka andmestruktuuriga *tibble*, mille puhul on sisuliselt tegu samuti *data frame*'iga, mis on lihtsalt vormindatud natuke erinevalt. Andmehulgad saavad R-s olla aga ka teistsugused. Lühidalt puudutasime esimese teema juures näiteks vektorit *(vector)*, mis on mingite väärtuste jada. Kui *data frame* on kahedimensionaalne ehk selles on nii read kui veerud, siis vektor on ühedimensionaalne andmehulk. Vektori saab defineerida funktsiooniga `c` (ehk *combine arguments*), moodustame siin näiteks vektori nimega `arvud`, mis sisaldab nelja arvu:
+
+```{r}
+arvud <- c(310, 95, 105, 30)
+```
+
+Nagu tunnus *data frame*-s, saab ka vektor ehk vektoris olevad andmed olla ainult ühte tüüpi, antud vektor on pidevat tüüpi (selles on küll ainult täisarvud, aga me ei ole R-le ette andnud, et neid arve tuleb tingimata täisarvulistena käsitleda, ei ole defineerinud `arvud <- c(310L, 95L, 105L, 30L)`):
+
+```{r}
+typeof(arvud)
+```
+
+Vektorist saame väärtusi välja võtta nurksulgude abil, sisestades nurksulgudesse väärtuse järjekorranumbri. Näiteks kui soovime teada, kui suur on vektoris arvud teisel kohal olev arv, siis saame kirjutada:
+
+```{r}
+arvud[2]
+```
+
+Samuti saame teha ka tehteid:
+
+```{r}
+arvud[2] + arvud[3]
+```
+
+Põhimõtteliselt võib *data frame*-i käsitleda kui ühepikkuste vektorite kogu, ühepikkused vektorid saamegi liita kokku *data frame*-ks. Anname andmestikus tunnustele ka teistsugused nimed kui eelnevates näidetes vektoritel, et oleks edaspidistes näidetes selgem, millal teeme tehteid eraldiseisvate vektoritega, millal tunnustega andmestikust.
+
+```{r}
+taimed <- c("puu", "põõsas", "põõsas", "lill")
+df <- data.frame(arvud, taimed)
+names(df) <- c("numbers", "plants")
+df
+
+typeof(df$numbers)
+typeof(df$plants)
+```
+
+Üks põhilisi veateate allikaid on see, kui meil jääb kahe silma vahele, millist tüüpi andmehulka funktsioon eeldab. Näiteks, kas funktsioon eeldab, et andmehulk, millega ta peab midagi tegema ja mille talle (enamasti esimese argumendiga) ette anname, on vektor või *data frame*. Osad `dplyr`-i ja muude `tidyverse`-i hulka kuuluvate pakettide funktsioonid eeldavad, et anname *eraldi* argumendiga ette *data frame*-i nime, mõned muud funktsioonid jällegi eeldavad vektorit ehk konkreetset veergu andmestikust. Võrdleme, kuidas käituvad *dplyr*-i funktsioon *select* ja paketi *base* (see pakett laetakse sisse automaatselt R-i käivitamisega) funktsioon *mean*.
+
+```{r message = FALSE}
+library(dplyr)
+select(df, numbers) # anname ette eraldi argumentidena andmestiku ja tunnuse sellest andmestikust
+
+mean(arvud) # anname ette eraldiseisva vektori
+mean(df$numbers) # funktsioon töötab ka, kui defineerida ühes argumendis koos andmestik ja tunnus
+```
+
+Järgnevad käsud seevastu võimalikud poleks, annaksid veateate:
+
+```{r eval = FALSE}
+select(df$numbers) # antakse ette tunnus andmestikust ehk sisuliselt üks vektor - ei tööta
+# select tahab esmalt eraldi argumendina andmestikku ja seejärel eraldi argumendina tunnust sellest andmestikust
+mean(df) # antakse ette kogu andmestik, funktsioon ei oska kogu andmestikuga midagi peale hakata, eeldab vektorit
+```
+
+Seda, kas mingi andmeobjekti puhul on tegu *data frame*-iga, saame teada funktsiooni `class` abil:
+
+```{r}
+class(df)
+```
+
+### Sisuliselt erinevat tüüpi väärtused vektoris/tunnuses
+
+Nii vektorite kui *data frame*-i tunnuste puhul kehtib reegel, et kui vektoris või tunnuses esineb väärtuseid, mis on sisuliselt erinevat tüüpi, käsitleb R neid kõiki automaatselt madalamat tüüpi väärtustena, nt:
+
+```{r}
+vektor <- c(2, 35, "6", "kuus", "ohoo")
+typeof(vektor)
+```
+
+Kuna antud vektoris on peale väärtuste 2 ja 35 ka tekstilised väärtused "6", "kuus" ja "ohoo", käsitleb R väärtusi 2 ja 35 tekstiliste väärtustena, mitte arvudena. Seega pole ka võimalik nt tehe
+
+```{r eval = FALSE}
+vektor[1] + vektor[2]
+```
+
+Andmeid mingist failist sisse lugedes tasub seega veateadete puhul ka kontrollida, mis tüüpi analüüsis kasutatavad tunnused R-i mõistes on. Näiteks võib juhtuda, et tunnuses on arvud, aga andmete sisselugemisel muutuvad nad andmeformaadi ümberkonverteerimisel tekstiks (*character*-tüüpi andmeteks). Andmeid saab põhimõtteliselt ühest tüübist teise konverteerida, aga see eeldab, et see on põhimõtteliselt võimalik - arve, mis on defineeritud tekstina (nt "6"), on võimalik arvuliseks muuta, teksti arvudeks muuta mitte (R ei saa aru, et nt tekst "kuus" peaks omama tähendust 6).
+
+```{r message = FALSE}
+vektor[1:2] # vektori esimesed kaks liiget esitatakse tekstiliste andmetena (jutumärkides), sest vektori ülejäänud liikmed on character-tüüpi ja seega kõiki vektori liikmeid käsitleb R character-ina
+as.numeric(vektor[1:3]) # vektori kolm esimest liiget esitatakse arvudena, sest funktsiooniga as.numeric konverteeritakse nad väljundi jaoks arvudeks (NB! ainult väljundi jaoks, sest konverteerimise tulemust objektile vektor siin tagasi ei omistata)
+```
+```{r}
+as.numeric(vektor[1:3]) |> sum() # vektori esimest kolme liiget saab pärast konverteerimist käsitleda arvudena, seega on võimalik arvutada nende summa
+```
+
+Kui kasutate eelnevas käsus *pipe*'i `%>%`, tuleks eelnevalt laadida ka pakett `tidyverse`. Nii `%>%` kui `|>` teevad sama asja.
+
+Kui üritame konverteerida arvuliseks kogu vektori, saame kahe viimase liikme väärtusteks andmelüngad, sest neid konverteerida ei õnnestu. Sellisel juhul on võimalik kogu vektori summa arvutada, kui täpsustame, et andmelüngad jäetakse arvutusest välja.
+
+```{r}
+as.numeric(vektor) 
+as.numeric(vektor) |> sum(na.rm = TRUE) 
+```
+
+### Järjestustunnus R-s
+
+Nägime eelnevalt, et R-s on olemas arvuliste tunnuste tüübid ja et R-i *character*-tüüpi tunnus on sisu poolest kategoriaalne tunnus. Aga kas R-s on ka eraldi järjestustunnuste tüüp? Eelnevalt vaadatud nelja R-i andmetüübi seas *(double, integer, character, logical)* sellist otseselt ei ole, aga tunnus on võimalik eraldi defineerida kategoriaalsena ehk *factor*ina (nimetagem seda eestipäraselt faktortunnuseks) ehk anda talle klass *factor*. Faktori väärtustel on tasemed ehk *levels* ja lisaks võivad olla märgendid ehk *labels*. Tasemeid saab järjestada, seega saab faktor olla järjestustunnus.
+
+Näiteks lisame andmestikku `df` tunnuse `korgus` ja lisame sellele väärtused vastavalt tunnuse `taimed` väärtustele (puu on kõige kõrgem, lill tavaliselt madalaim taim).
+
+```{r}
+korgus <- c("kõrge", "madal", "madal", "kõige madalam")
+df <- data.frame(df, korgus)
+```
+
+Tegu on tekstilise tunnusega:
+
+```{r}
+typeof(df$korgus)
+```
+
+Muudame tunnuse faktoriks:
+
+```{r}
+df <- df |> 
+  mutate(korgus = as.factor(korgus))
+```
+
+Kuna faktor ei ole üks R-i n-ö sisse ehitatud neljast põhilisest andmetüübist, siis tuvastame selle funktsiooniga `class`:
+
+```{r}
+class(df$korgus)
+```
+
+Me ei defineerinud tekstilise faktori kategooriate ehk *level*-ite järjestust, seetõttu järjestatakse kategooriad mitte nende sisu järgi (kõrge, madal, kõige madalam), vaid tähestikulises järjekorras nagu näha sagedusjaotuse tabelist:
+
+```{r message = FALSE}
+df |> 
+  count(korgus)
+```
+
+Et juba olemasoleva faktori väärtusi järjestada väärtuste sisulise tähenduse järgi, saab kasutada nt funktsiooni `fct_relevel` paketist `forcats` (võimalik, et paketi sisselaadimiseks peate selle eelnevalt ka installeerima käsuga `install.packages("forcats")`:
+
+```{r message = FALSE}
+library(forcats)
+df <- df |> 
+  mutate(korgus = fct_relevel(korgus, "kõrge", "madal", "kõige madalam"))
+
+df |> 
+  count(korgus)
+```
+
+Erinevaid andmehulkade tüüpe on R-s veel, aga nendega me tegelema vähe, kui üldse. Olgu siin ära mainitud ainult maatriks ehk *matrix*, mis erineb *data frame*-ist selle poolest, et veergudes peavad olema andmed sama tüüpi (nt saavad maatriksis kõik andmed olla arvulised), ja list, mis võimaldab ühedimensionaalsesse andmehulka lisada erinevat andmetüüpi väärtusi nii, et iga väärtus säilitab oma andmetüübi (erinevalt vektorist ja *data frame*-i tunnusest).
+
+Nagu öeldud, andme- ja tunnuste tüüpides on oluline orienteeruda, sest erinevad analüüsimeetodid eeldavad erinevat tüüpi andmeid. Näiteks R-s saate veateate juhul, kui üritate faktortüüpi tunnusest keskmist arvutada. Antud hetkeks pole me erinevaid analüüsimeetodeid praktiliselt veel õppinudki, seetõttu on ok, et tunnuste tüübid ja nende eripärad võivad antud hetkel jääda veel abstraktseks. Praegu on oluline omada tunnuste tüüpidest mingitki ülevaadet, et kui need mõisted kuskil hiljem ette tulevad, oleks mingi taust olemas ja kuskil tagumises ajusagaras n-ö tugipunkt, millega edasisi teadmisi seostada. Tunnuste tüüpidega puutume edaspidi kindlasti korduvalt kokku.
+
+
+## Esmane info andmestiku kohta
+
+Vaatame täna lähemalt, kuidas R-s saada ülevaade kategoriaalsete tunnuste jaotustest. Hästi sobivad selleks mingi küsitlusuuringu nagu Euroopa Sotsiaaluuringu (ESS) andmed. Tegu on ühe kvaliteetseima rahvusvahelise küsitlusuuringuga, mida viiakse läbi iga kahe aasta tagant enamikus Euroopa riikides ja mille andmed on veebis vabalt kättesaadavad. Andmed on esinduslikud uuringus osalevate riikide elanikkonna suhtes (täpsemalt, vähemalt 15-aastaste alaliste elanike suhtes). [ESS-i andmeportaalist](https://ess.sikt.no/en/) on andmed allalaetavad näiteks SPSS-i ehk .sav formaadis, sellises formaadis andmestiku R-i laadimiseks saab kasutada funktsiooni `read_spss` paketist `haven`. Siin kasutatavad andmed on ESS-i 9. küsitluslainest ehk 2018. aastast.
+
+Antud juhendis olevate näidete ja harjutuste kaasategemiseks tehke R-s uus projekt. Laadige Moodle'st alla praktikumiandmestiku fail, looge oma projektikaustas kaust `data` ja kopeerige andmestiku fail sinna. Allolev `read_spss` käsk töötab, kui projektikaustas on kaust `data` ja selles andmestik `ESS9e03_1.sav` ning käivitate antud käsu RStudios selle projekti aknas. Kui projekti akna mingil põhjusel sulgete, saate selle taas avada, kui teete topeltklõpsu projekti kaustas oleval .Rproj laiendiga failil.
+
+```{r message = FALSE}
+library(haven)
+r9 <- read_spss("data/ESS9e03_1.sav")
+```
+
+Kasutame ainult Eesti andmeid, eraldame edasiseks tööks vajalikud andmed objekti `ee9`.
+
+```{r}
+ee9 <- r9 |> 
+  filter(cntry == "EE") |> 
+  select(health, gndr, gincdif, pspwght)
+```
+
+Kui soovime andmestikust mingit ülevaadet saada, võimaldab seda funktsioon `str`. See näitab andmestiku kõigi tunnuste esimeste ridade väärtusi, tunnuse pikemat nime, SPSS-i formaati (pole eriti informatiivne), tunnuste võimalikke väärtusi ja nende väärtuste kirjeldusi ehk märgendeid. Kui märgendeid on palju, ei mahu nad väljundisse ära, aga mingi ülevaate tunnustest siit saame. Näeme, et tervisehinnangu, soo ja ühe väitega nõustumise tunnuste väärtused on andmestikus arvulisel kujul, aga neile on lisatud ka märgendid. Neljandal tunnusel `pspwght` märgendeid ei ole, see on puhtalt arvuline tunnus.
+
+```{r}
+str(ee9)
+```
+
+## Tunnuse sagedusjaotus
+
+Uurime, milliseks hindasid Eesti inimesed 2018. aastal oma tervist. Seda mõõdab tunnus `health`, vaatame kõigepealt selle tunnuse omadusi.  Ühe tunnuse kohta annab võrreldes funktsiooniga `str` ehk isegi täielikuma info funktsioon `attributes`, mis näitab ka tunnuse klasse ja tüüpi.
+
+```{r}
+attributes(ee9$health)
+```
+
+Väljundist on näha, et tunnuse tüüp on `double` ehk pidev, samas on tunnuse väärtustel ka märgendid ehk sõnalised vasted. Tundub segane olukord. Põhjus on selles, et andmeanalüüsiprogrammis SPSS, kust antud andmestik pärineb, on võimalik ka arvulisele tunnusele märgendeid lisada, R-i andmete toomisel seda automaatselt ei muudeta.
+
+Kui vaatame tunnuse sagedusjaotust funktsiooniga `count`, siis näeme nii tunnuses olevaid arvulisi koode kui märgendeid:
+
+```{r}
+ee9 |> 
+  count(health)
+```
+
+Kui koostame aga selle jaotusega tulpdiagrammi (kasutades funktsiooni `ggplot` paketist `ggplot2`), siis esitatakse joonisel siiski ainult arvulised koodid, sest R opereerib enamasti nendega, mitte märgenditega:
+
+```{r}
+library(ggplot2)
+
+ee9 |> 
+  count(health) |> 
+  ggplot(mapping = aes(x = health, y = n)) +
+  geom_col()
+```
+
+Kui soovime joonisel arvuliste koodide asemel märgendeid, peame selle ka seadistama. Kasutame selleks funktsiooni `as_label` paketist `sjlabelled`. Ka teistes pakettides leidub sama nimega funktsioone, mis töötavad samas natuke teistmoodi, sellistel juhtudel võiks töökindluse tagamiseks kirjutada funktsiooni ette ka vastava paketi nime koos kahe kooloniga nagu allpool on tehtud (sellisel juhul pole vaja ka paketti `library`-käsuga sisse laadida).
+
+```{r}
+# install.packages("sjlabelled")
+
+ee9 |> 
+  mutate(health = sjlabelled::as_label(health, drop.levels = TRUE)) |> 
+  count(health) |> 
+  ggplot(mapping = aes(x = health, y = n)) +
+  geom_col()
+```
+
+`sjlabelled::as_label` on üsna mugav vahend tunnuse märgendite kasutamiseks tabelites ja joonistel. Kui sooviksime aga töötada eestikeelsete märgenditega, oleks siiski tarvis natuke rohkem vaeva näha ja tunnuse väärtused ümber kodeerida (selle kohta on ka näiteid esimese praktikumi juhendis). Ka tuleb eri formaadis andmefailide puhul silmas pidada, et mitmete teiste failiformaatide puhul märgendeid ei esine, sel juhul tulebki arvulised koodid ise ümber kodeerida sõnalisteks vasteteks.
+
+Kodeerime tunnuse ümber faktortunnuseks nii, et arvuliste koodide asemel oleks tunnuste eestikeelsed sisulised kirjeldused. Et järjestustunnuse kategooriad oleks õiges järjestuses, võime kasutada funktsiooni `factor` samamoodi nagu ühes eelmise nädala ümberkodeerimise näites, aga võime seda funktsiooni kasutada ka funktsiooni `recode_values` eraldi argumendis `ptype`.
+
+```{r}
+ee9 <- ee9 |> 
+  mutate(health_ee = recode_values(health, 
+                          1 ~ "Väga hea", 
+                          2 ~ "Hea", 
+                          3 ~ "Rahuldav", 
+                          4 ~ "Halb", 
+                          5 ~ "Väga halb",
+                          ptype = factor(levels = c("Väga hea", 
+                                                     "Hea", 
+                                                     "Rahuldav", 
+                                                     "Halb", 
+                                                     "Väga halb"))))
+
+ee9 |> 
+  count(health_ee)
+```
+
+Saame tabelisse lisada ka protsentjaotuse: `|>`-ga edastame käsu `count(health)` tulemuse ehk jaotustabeli järgmisele reale, kus lisame funktsiooniga `mutate` tabelile veeru `protsent`; arvutame sinna protsentjaotuse. Valemis, mis seda teeb, on `n` jaotustabeli eelneva veeru, kus on indiviidide arvud, nimi.
+
+```{r}
+ee9 |> 
+  count(health_ee) |> 
+  mutate(protsent = n / sum(n) * 100)
+```
+
+Saime lisaks tunnuse absoluutsele jaotusele tabelisse ka suhtelise jaotuse ehk protsentjaotuse. Lisaks võib andmetest kiirema ülevaate saamiseks kasu olla kumulatiivsest protsentjaotusest (vt selle sisulist selgitust pärast tabelit): 
+
+```{r}
+ee9 |> 
+  count(health_ee, wt = pspwght) |> 
+  mutate(protsent = n / sum(n) * 100,
+         kum_protsent = cumsum(protsent))
+```
+
+Kumulatiivse protsentjaotuse puhul on vaadeldava kategooria sagedusele lisatud eelnevate kategooriate sagedused, näiteks saab kumulatiivse protsentjaotuse põhjal öelda, et väga hea ja hea tervisehinnanguga vastajaid on ümardatult 54% ning et vähemalt rahuldavaks on oma tervise hinnanud 90% vastajatest. Kumulatiivne sagedusjaotus ongi tõlgenduslikult kõige kasulikum just järjestustunnuste puhul.
+
+## Tunnuse kaalutud sagedusjaotus
+
+Küsitlusandmete puhul, mis taotlevad esinduslikkust sihtpopulatsiooni suhtes (antud juhul on sihtpopulatsioon Eesti vanuses 15+ elanikkond), on samas oluline nüanss, et parema esinduslikkuse tagamiseks andmeid enamasti kaalutakse. Kaalumisega antakse vastajate seas suurem kaal neile gruppidele, mis võrreldes sihtpopulatsiooniga on andmetes alaesindatud ning väiksem kaal neile gruppidele, mis on üleesindatud. Siinkohal ei lasku me kaalumise nüanssidesse, olgu vaid öeldud, et ESS-i andmestikes on kolm või neli erinevat kaalutunnust, mille eesmärk on laias laastus sama (andmete esinduslikkuse parandamine), kuid detailides erinev (milliseid asjaolusid kaalumisel arvesse võetakse). Kui ESS-i andmetest analüüsitakse ühe riigi andmeid või mitme riigi andmeid võrdlevalt, on sobiv kasutada järelkihistuskaalu tunnust `pspwght` *(post-stratification weight)*. Funktsiooni `count` puhul saab seda teha, defineerides argumendi `wt` väärtusena kaalutunnuse nime.
+
+```{r}
+ee9 |> 
+  count(health_ee, wt = pspwght) |> 
+  mutate(protsent = n / sum(n) * 100,
+         kum_protsent = cumsum(protsent))
+```
+
+Kaalumisel saavad alaesindatud gruppidesse kuuluvad indiviidid ühest suurema kaalu, üleesindatud gruppidesse kuuluvad indiviidid ühest väiksema kaalu. Lihtsustatult öeldes, näiteks kui mingi grupi osakaal on sihtpopulatsioonis 30%, aga küsitlusandmetes 25%, on selle grupi indiviidide puhul järelkihistuskaalu tunnuse väärtuseks `0.3 / 0.25 = 1.2` ehk üks taoline indiviid esindab analüüsis 1,2 indiviidi arvamusi. Kuna kaalutunnuse `pspwght` väärtusteks on murdarvud, on ka sagedusjaotuse tabelis vastajate arvudeks murdarvud, mis loogiliselt mõeldes tundub imelik (väga halva tervisehinnanguga oleks justkui 32,4 vastajat), tehniliselt on see siiski põhjendatud; sisuliseks tõlgenduseks võib muidugi need arvud täisarvuni ümardada. Nagu näha, on võrreldes kaalumata jaotusega natuke tõusnud vastajate osakaalud, kes on hinnanud oma tervise väga heaks või heaks ja langenud sellest kehvema tervisehinnanguga vastajate osakaalud. Ilmselt tuleneb see sellest, et kaalumata andmestikus on vastajate hulgas mõnevõrra üleesindatud vanemad inimesed, nemad hindavad oma tervist reeglina kehvemaks. 
+
+## Sagedusjaotused muude pakettide abiga
+
+Eelnevalt arvutasime suhtelised sagedused nii, et kirjutasime ise vastavad arvutusvalemid. Muidugi on olemas muudes pakettides ka funktsioone, mis teevad need arvutused ise, ilma et peaksime valemid välja kirjutama. Üks võimalus (kaalutud) sagedusjaotuste saamiseks on funktsioon `summarytools::freq` (siin on paketi `summarytools` nimi kirjutatud koos funktsiooni nimega `freq`, eraldatud kahe kooloniga -- see on hõlbus viis teada anda, millisesse paketti mingi funktsioon kuulub). Kui paketti `summarytools` mingil põhjusel installeerida või kasutada ei õnnestu (on üksikutel juhtudel ette tulnud), saab sarnase sagedusjaotuste tabeli funktsiooniga `freq` paketist `descr` (vt allpool). 
+
+```{r warning = FALSE, message = FALSE}
+# install.packages("summarytools")
+
+summarytools::freq(ee9$health_ee, weights = ee9$pspwght)  # paketi nimi ja kaks koolonit funktsiooni ees võimaldab funktsiooni kasutada ilma paketti library-käsuga laadimata
+```
+
+Veerus `Freq` on vastajate arvud ehk vastuste absoluutne sagedusjaotus, veerus `% Valid` on vastajate protsentuaalne jaotus ehk suhteline sagedusjaotus ilma puuduvate väärtusteta ehk ilma andmelünkadeta. Andmelüngad tekivad küsitlusuuringus enamasti kas sellest, et vastaja pole osanud küsimusele vastata või on sellest keeldunud või seetõttu, et konkreetset küsimust pole vastajalt küsitudki (nt töötusperioodi pikkuse kohta poleks mõtet küsida neilt, kes pole kunagi töötud olnud). Antud juhul andmelünki polegi, mistõttu veerud `% Valid` ja `% Total` on sisuliselt identsed. Samal põhjusel on antud juhul identsed ka veerud `% Valid Cum.` ja `% Total Cum.`, kus esitatakse tunnuse kumulatiivne protsentuaalne jaotus.
+
+Teine võimalus sarnase tabeli saamiseks on funktsioon `descr::freq`. See funktsioon annab vaikeseadena lisaks üsna lakoonilise tulpdiagrammi (kui kuskil teistele tunnuse sagedusjaotust esitate, pole mõtet teineteist dubleerivat tabelit ja joonist mõlemat esitada, siis on mõttekas lisada `descr::freq` käsku argument `plot = FALSE`).
+
+```{r warning = FALSE, message = FALSE}
+# install.packages("descr")
+
+descr::freq(ee9$health_ee, w = ee9$pspwght)
+```
+
+NB! Paketis `summarytools` ja `descr` on samanimelised funktsioonid `freq`. See võib segadust tekitada -- arvate, et käivitate ühe paketi funktsiooni, aga saate teistsuguse väljundi kui ootate. Seetõttu on mõttekas sellistel juhtudel kirjutada funktsiooni nime ette paketi nimi koos kahe kooloniga nagu ülalpool ongi tehtud, et käivituks just selle paketi funktsioon, mida soovite.
+
+Põhjalikuma andmetöötluse puhul on siiski soovitatav koostada tabeleid eelneva `dplyr::count` funktsiooniga, sest selle väljundiks on puhas *data frame*, mida on lihtne edasises analüüsis kasutada ja edasi töödelda (erinevalt n-ö täislahendustest, kus väljundtabelil võib olla mingi oma eriline andmeformaat). Näiteks saab *data frame*'i formaadis tabelit teiste pakettide abil esitluseks paremini vormistada. Allpool on selle illustreerimiseks toodud näide, kus funktsiooni `across` abil rakendatakse kolmele veerule ümardamise funktsiooni `round`, funktsiooniga `rename` muudetakse tabeli päises veergude nimed ja funktsiooni `gt::gt` abiga tabel vormindatakse ja esitatakse RStudios Viewer-aknas, argumendiga `caption` lisatakse tabeli pealkiri.
+
+```{r}
+# install.packages("gt")
+
+ee9 |> 
+  count(health_ee, wt = pspwght) |> 
+  mutate(protsent = n / sum(n) * 100,
+         kum_protsent = cumsum(protsent)) |> 
+  mutate(across(c(n, protsent, kum_protsent), round)) |> 
+  rename(Tervisehinnang = health_ee, 
+         "Vastajate arv" = n, 
+         Protsentjaotus = protsent,
+         "Kumulatiivne protsentjaotus" = kum_protsent) |> 
+  gt::gt(caption = "Tabel 1. Eesti vastajate jaotus tervisehinnangu alusel. Andmed: ESS 2018, kaalutud järelkihistuskaaludega")
+```
+
+## Harjutus 1
+
+::: {.panel-tabset}
+
+### Ülesanne
+
+Läheme tervisehinnangute juurest selle juurde, kas valitsus peaks Eesti inimeste arvates rakendama abinõusid sissetulekuerinevuste vähendamiseks. Andmed selle väitega nõustumise kohta on tunnuses `gincdif`. Kasutame ESS-i 9. laine ehk 2018. aasta andmeid, mis pole küll kõige uuemad, ent sobivad hilisemate näidete ja selgituste jaoks hästi.
+
+1. Koostage tunnuse `gincdif` kaalutud sagedusjaotus (nii absoluutne kui protsentjaotus ja lisage ka kumulatiivne protsentjaotus) funktsiooni `count` abil nii, et tabelis oleksid skaalapunktide sõnalised vasted. Ümberkodeerimise harjutamiseks kasutage eestikeelseid vasteid. Küsitlusandmete analüüsil on tulemuste täpseks tõlgendamiseks hea alati järele vaadata küsimuse ja skaalapunktide täpne sõnastus. [Siit](https://stessrelpubprodwe.blob.core.windows.net/data/round9/survey/ESS9_appendix_a7_e03_1.pdf) leiate ESS 9. laine andmestiku koodiraamatu, kust saate otsida märksõna "gincdif" järgi, millise järjekorranumbriga on küsitlusankeedis see küsimus, mille vastused on andmestikus talletatud tunnuses `gincdif`. Seejärel saate otsida [eestikeelsest ankeedist](https://stessrelpubprodwe.blob.core.windows.net/data/round9/fieldwork/estonia/estonian/ESS9_questionnaires_EE_est.pdf) vastava järjekorranumbriga küsimuse ja näha sealt eestikeelset skaalat, mida kasutades on uuringus osalejad oma vastuse andnud. Kasutage seal olevat skaalapunktide sõnastust tunnuse `gincdif` ümberkodeerimisel. 
+
+2. Tõlgendage saadud jaotust. Kas Eesti inimesed kalduvad väitega nõustuma või mitte nõustuma? Kas vastamisel kasutatakse pigem äärmisi vastusevariante (täielikku nõustumist ja mittenõustumist) või rohkem lihtsalt nõustumist/mittenõustumist? Kui suur on nende osa, kes selget seisukohta ei võta?
+
+Kui ülesande lahendamisel tekib takistusi või muid probleeme, vaata järgmiselt paanilt vihjeid. Kui neist ei ole abi, võid julgelt õppejõule meilile või Moodle's teema foorumisse kirjutada. Kui tegu on mingi tehnilise probleemiga (saad R-s veateate), kopeeri oma sõnumisse kindlasti ka veateade koos sellele eelnenud käsuga.
+
+### Vihje
+
+Käsud, millega tunnust ümber kodeerida ja sagedusjaotuse tabel luua, on juhendi eelnevates osades olemas, tarvis on need vaid üles leida ja muuta käskudes tunnuste nimed. Ümberkodeerimisel tuleb silmas pidada, et tunnus saaks muudetud faktortunnuseks ja kategooriad õigesti järjestatud, muidu on jaotustabelis kategooriad loogiliselt vales järjekorras, mis ei ole kuigi informatiivne.
+
+### Tulemus
+
+```{r echo = FALSE}
+ee9 <- ee9 |> 
+  mutate(gincdif_ee = recode_values(gincdif, 
+                              1 ~ "Olen täiesti nõus", 
+                              2 ~ "Olen nõus", 
+                              3 ~ "Ei nõustu ega ole vastu", 
+                              4 ~ "Ei ole nõus", 
+                              5 ~ "Ei ole üldse nõus",
+                              ptype = factor(levels = c("Olen täiesti nõus", 
+                                                         "Olen nõus", 
+                                                         "Ei nõustu ega ole vastu", 
+                                                         "Ei ole nõus", 
+                                                         "Ei ole üldse nõus"))))
+
+
+ee9 |> 
+  count(gincdif_ee, wt = pspwght) |> 
+  mutate(protsent = n / sum(n) * 100,
+         kum_protsent = cumsum(protsent))
+```
+
+:::
+
+## Risttabel ehk tunnuste ühisjaotus
+
+Huvitav oleks teada, kas meeste ja naiste arvamused selle osas, kas valitsus peaks erinevusi sissetulekute tasemetes vähendama, on sarnased või erinevad. Selle uurimiseks saame ühemõõtmelise sagedusjaotuse asemel, millega eelnevalt tegelesime, teha kahemõõtmelise jaotuse ehk risttabeli, kus on kahe tunnuse, `gincdif` ja `gndr`, ühisjaotus. Kodeerime enne veel soo tunnuse eestikeelseks. Eespool olnud `str`-käsust saab järgi vaadata, et ühega tähistatakse selles tunnuses mehi ja kahega naisi. Kuna tegu on nominaaltunnusega, pole kategooriate järjekorda otseselt tarvis seadistada (kategooriad järjestatakse näiteks jaotustabelis siis lihtsalt tähestikulises järjekorras).
+
+```{r}
+ee9 <- ee9 |> 
+  mutate(gndr_ee = recode_values(gndr,
+                            1 ~ "Mees",
+                            2 ~ "Naine"))
+```
+
+Hea on alati järgi kontrollida, kas ümberkodeerimine töötas õigesti, nt nii:
+
+```{r}
+ee9 |> 
+  count(gndr, gndr_ee)
+```
+
+Kui iga kategooria esineb eelnevas tabelis vaid ühel real, peaks ümberkodeerimine olema õigesti tehtud.
+
+Risttabeli koostamiseks saab jällegi kasutada `dplyr`'i funktsiooni `count`, aga kuna see on omajagu keerulisem kui ühe tunnuse jaotuse puhul, jätame selle hilisemaks. Vaatame, kuidas saame risttabeli koostada funktsiooniga `ctable` paketist `summarytools`. See funktsioon võimaldab ka andmeid kaaluda. 
+
+```{r}
+library(summarytools)
+
+ctable(ee9$gincdif_ee, ee9$gndr_ee, weights = ee9$pspwght)
+```
+
+Saadud risttabelist võib välja lugeda, et väitega täiesti nõus olevate vastajate seas on naisi rohkem, ka on naisi mõnevõrra rohkem nõus olevate vastajate hulgas; täielikult mittenõustujate seas on seevastu rohkem mehi. Võib tunduda, et naised kalduvad seega meestest enam arvama, et valitsus peaks sissetulekuerinevusi vähendama. See järeldus oleks siiski ennatlik. Nagu näha tabeli viimaselt realt, on naisi vastajate seas niikuinii natuke rohkem, seega on näiteks nõustujate seas meeste-naiste jaotus praktiliselt sama, mis kogu valimis üldiselt. Meeste ülekaal täielikult mittenõustujate seas ei oma samuti üldises plaanis eriti suurt tähtsust, sest vastajate arv, kes on valinud selle variandi, on väga väike (kaalutult 38 indiviidi). 
+
+Antud risttabelis olid vaikimisi arvutatud reaprotsendid ehk vastuste sooline jaotus väitega nõustumise kategooriates. Meeste ja naiste arvamuste erinevusi võimaldaks aga antud juhul paremini võrrelda veeruprotsendid, kus meeste arvamused annaksid kokku 100% ja naiste arvamused annaksid kokku 100% (st 100% oleks mitte ridade lõpus, vaid veergude lõpus). Sellisel juhul ei mõjuta protsentjaotusi see, kui palju on vastajate hulgas mehi või naisi, samuti on eksijärelduste oht väiksem juhul, kui mingi arvamuse esindajaid on väga vähe. Koostame veeruprotsentidega tabeli, lisades argumendi `prop` väärtuseks `"c"` (nagu *column percentages*), sisulise tõlgenduse lihtsustamiseks jätame siinkohal välja andmelünkade sagedused (argument `useNA = "no"`), mittevastanud indiviide on niikuinii antud juhul väga vähe (7).
+
+```{r}
+ctable(ee9$gincdif_ee, ee9$gndr_ee, weights = ee9$pspwght, useNA = "no", prop = "c")
+```
+
+Näeme, et meeste ja naiste arvamuste jaotustes esineb küll mingeid erinevusi, kuid need on nii väikesed, et on ilmselt juhuslikku laadi ja sisulist tähtsust ei oma. Seega oleks korrektne järeldus antud juhul, et sugu ja uuritava väitega nõustumine omavahel seotud pole, vähemalt ei saa seda uuritud andmete põhjal väita.
+
+Risttabelis võib rea- ja veeruprotsentide asemel seadistada ka üldprotsendid (`prop = "t"` nagu *total*). 
+
+```{r}
+ctable(ee9$gincdif_ee, ee9$gndr_ee, weights = ee9$pspwght, useNA = "no", prop = "t")
+```
+
+Millised protsentjaotuse lahtrid moodustavad siin kokku 100%? Kuidas sellisel juhul tõlgendada protsentjaotuse sagedusi, nt tabeli vasakus ülemises nurgas olevat 6,7%? Mõelge esmalt ise, seejärel vaadakse vastust altpoolt.
+
+<details>
+  <summary>Vastuse nägemiseks klikkige siia</summary>
+100% annavad kokku kõik lahtrid, mis ei ole tabeli äärtes. Tabeli ääri ehk parempoolset veergu ja alumist rida nimetatakse ka marginaaljaotusteks, mis näitavad kummagi tunnuse jaotust teisest tunnusest sõltumata (põhimõtteliselt sama jaotust, mida näeksime kummagi tunnuse sagedusjaotuse tabelitest eraldi). Seega võib öelda, et 100% annavad antud juhul kokku need kümme lahtrit, mis ei kuulu marginaaljaotuste alla.
+
+6,7% vastajatest on mehed, kes nõustuvad esitatud väitega täielikult. Pange tähele, et nii protsentnäitaja vastavas lahtris kui selle tõlgendus on eelnevatest tabelitest erinev: reaprotsentide puhul oli sama lahtri protsentnäitaja 41,4%, see näitas meeste osakaalu täielikult nõustujate seas; veeruprotsentide puhul oli selle lahtri protsentnäitaja 14,5%, see näitas täielikult nõustujate osakaalu meeste seas. Ükski kolmest protsentjaotuste arvutamise viisist pole otseselt vale, erinevad protsentjaotused võimaldavad lihtsalt vastata erinevatele küsimustele. Seetõttu on väga oluline, et risttabeli protsentnäitajate tõlgendus oleks korrektne, muidu võime kergelt sattuda eksijäreldustele. Kui aju on juba tabelite mõtestamisest krussis, võib ka teha kõik kolm protsentjaotust ja püüda nende põhjal võrdlevalt aru saada, millise jaotuse põhjal millisele küsimusele vastata saame. Kui ka siis on aju jätkuvalt väga krussis, on mõttekas teha väike paus, nt 10-15 minutit, võib-olla isegi väike jalutuskäik õues.
+</details> 
+<br>
+
+## Harjutus 2
+
+::: {.panel-tabset}
+
+### Ülesanne
+
+Eelnevalt uurisime, kas sugu ja nõustumine väitega, et valitsus peaks rakendama abinõusid sissetulekuerinevuste vähendamiseks, on omavahel seotud. Püüdke nüüd leida vastus küsimusele, kas tervisehinnang on seotud nimetatud väitega nõustumisega; kui jah, siis millest seda järeldate? Eelkõige võiks siin uurida, kas väitega nõustumine on samasugune erineva tervisehinnanguga vastajate puhul. Tervisehinnangu tunnuses on väga halva tervisega indiviide vähe, seega tuleks kategooriad "Väga halb" ja "Halb" kokku liita üheks kategooriaks.
+
+### Vihje
+
+Tunnuse `health` ümberkodeerimine käib samamoodi nagu käesolevas juhendis eespool olev näide selle tunnuse ümberkodeerimisest, ainult selle erinevusega, et nii neljas kui viies kategooria ("Halb" ja "Väga halb") kodeeritakse ümber samaks kategooriaks (nt "Halb või väga halb"). See peaks peegelduma ka argumendi `ptype` väärtuses ehk `ptype = factor(levels = c("Väga hea", "Hea", "Rahuldav", "Halb või väga halb"))`.
+
+Juhendis eespool on olemas risttabeli koostamise käsk, mida saab kohandada käesoleva harjutuse jaoks, käsus on vaja vaid muuta tunnuste nimed.
+
+### Tulemus
+
+Harjutuse väljundiks saadav risttabel on üsna lai, ei pruugi teil konsooli hästi ära mahtuda ja võib ridade murdmise tõttu olla üsna raskesti loetav. Loetavust saab parandada, tõmmates konsooli osa RStudio aknas laiemaks.
+
+```{r echo = FALSE}
+ee9 <- ee9 |> 
+  mutate(health_ee4 = recode_values(health, 
+                          1 ~ "Väga hea", 
+                          2 ~ "Hea", 
+                          3 ~ "Rahuldav", 
+                          c(4, 5) ~ "Halb või väga halb", 
+                          ptype = factor(levels = c("Väga hea", 
+                                                     "Hea", 
+                                                     "Rahuldav", 
+                                                     "Halb või väga halb"))))
+
+ctable(ee9$gincdif_ee, ee9$health_ee4, weights = ee9$pspwght, useNA = "no", prop = "c")
+```
+
+:::
+
+## Lisa
+
+Allpool on kaks alateemat, mis on olulised, aga mitte kohustuslikud. Kui jõuad valida neist ainult ühe läbitöötamise, võiks see pigem olla teine, sagedusjaotuste visualiseerimine.
+
+<details>
+<summary class="h3-like">Risttabel funktsiooniga `count`</summary>
+
+Ühisjaotuse saame koostada ka funktsiooniga `count`, grupeerides eelnevalt andmestiku soo tunnuse alusel funktsioonig `group_by`. See võimaldab saada põhimõtteliselt sama tulemuse, mis eelnevatest tabelites oli veeruprotsentidega tabelis (arvamuste protsentjaotused moodustasid meeste seas 100% ja naiste seas 100% ehk vaatasime arvamuste jaotust soo lõikes).
+
+```{r}
+ee9 |> 
+  group_by(gndr_ee) |> 
+  count(gincdif_ee, wt = pspwght) |> 
+  mutate(protsent = n / sum(n) * 100)
+```
+
+Väljundis on küll näha, milline on arvamuste jaotus meeste seas ja naiste seas, aga sellise pikkformaadis tabeli puhul, kus meeste ja naiste näitajad on ülestikku, mitte kõrvuti, on näitajaid raske võrrelda. Neid oleks lihtsam kõrvutada, kui tabel oleks n-ö laiformaadis. Teeme saadud tabeli soo tunnuse alusel n-ö pooleks ja toome naiste jaotused eraldi veergudesse meeste omade kõrvale. Teeme seda funktsiooniga `tidyr::pivot_wider` (pakett `tidyr` on pakettide kogumi `tidyverse` osa, seega piisaks ka `tidyverse`'i laadimisest), kus on tarvis täpsustada argumendiga `names_from`, millise tunnuse alusel tabeli n-ö tükeldame, ja argumendiga `values_from`, milliste veergude näitajad eraldi veergudesse asetame.
+
+```{r}
+library(tidyr)
+ee9 |> 
+  group_by(gndr_ee) |> 
+  count(gincdif_ee, wt = pspwght) |> 
+  mutate(protsent = n / sum(n) * 100) |> 
+  pivot_wider(names_from = gndr_ee,
+              values_from = c(n, protsent))
+```
+
+Kui tahame saada risttabelit, kus ühisjaotus põhineks ainult neil vastajatel, kes on oma arvamuse välja öelnud (ehk "Ei oska öelda" vastustest ja keeldumistest tekkinud andmelüngad oleksid välja jäetud), saame kasutada funktsiooni `drop_na`, mille argumentidena paneme kirja tunnused, mille alusel andmelünkadega indiviidid tabelist välja arvata. Kas või millal on mõttekas andmelünkadega indiviide lihtsalt analüüsist eemaldada, käsitleme kevadsemestri jätkukursuses.
+
+```{r}
+ee9 |> 
+  drop_na(gincdif_ee, gndr_ee) |> 
+  group_by(gndr_ee) |> 
+  count(gincdif_ee, wt = pspwght) |> 
+  mutate(protsent = n / sum(n) * 100) |> 
+  pivot_wider(names_from = gndr_ee,
+              values_from = c(n, protsent))
+```
+
+Eelnevad funktsiooniga `count` saadud risttabelid sisaldasid arvamuste protsentjaotuseid soo lõikes. Kui soovime saada soo jaotuseid arvamuste lõikes (analoogselt funktsiooniga `ctable` saadud reaprotsentidega tabelile), peaksime andmestiku grupeerima tunnuse `gincdif_ee` alusel, loendama ridu soo tunnuse alusel ja `pivot_wider`-käsus seetõttu kasutama argumenti `names_from = gincdif_ee`. Kuna tabelisse tuleks nüüd 13 veergu (kui kaasata ka andmelüngad) ehk see saaks väga lai, võiks korraga jätta tabelisse kas ainult absoluutsed või ainult suhtelised jaotused (funktsioon `select`).
+
+```{r}
+ee9 |> 
+  group_by(gincdif_ee) |> 
+  count(gndr_ee, wt = pspwght) |> 
+  mutate(protsent = n / sum(n) * 100) |> 
+  select(-n) |> 
+  pivot_wider(names_from = gincdif_ee,
+              values_from = protsent)
+```
+</details>
+
+<details>
+<summary class="h3-like">Sagedusjaotuste visualiseerimine</summary>
+
+Vaatame lisaks ka kõige lihtsamat viisi kategoriaalse tunnuse jaotuse esitamiseks visuaalselt ehk kuidas R-s koostada tulpdiagrammi. Esimeses praktikumis tegime läbi ühe näite paketi `ggplot2` kasutamisest andmete visualiseerimisel, siin on joonise põhiline ülesehitus sarnane: funktsiooni `ggplot` esimeseks argumendiks on `data` ehk andmestik, teiseks argumendiks on `mapping`, kus funktsiooni `aes` (ehk *aesthetics*) abiga täpsustame tunnused diagrammil kasutatavad tunnused ehk paneme paika koordinaatteljestiku, vajadusel täpsustame värvide kasutuse, andmete kaalumise jms. 
+
+Näiteks soovime esitada tunnuse `gincdif_ee` sagedusjaotuse tulpdiagrammil. Eelnevalt tegime sama tunnuse jaotuse visualiseerimise läbi  funktsiooniga `geom_col`, kus kõigepealt koostasime tunnuse `gincdif_ee` jaotuse tabelina ja siis koostasime selle alusel joonise. Samas on võimalik teha joonis ka nii, et jätame jaotustabeli moodustamise vahele ja laseme ggplotil koostada joonise algandmestiku `ee9` alusel, kasutades funktsiooni `geom_bar`. Selleks kasutame andmestikku `ee9`, funktsiooni `aes` argumendile `x` omistame väärtuse `gincdif_ee` ehk diagrammi x-teljel kuvame selle tunnuse väärtused. Kuna soovime andmeid kaaluda, siis samas täpsustame ka argumendi `weight` väärtuse (kaalutunnus `pspwght`). Koodirea lõppu lisame `+` ja järgmisele reale funktsiooni `geom_bar` (erinevat tüüpi jooniste ehk täpsemalt visuaalsete elementide jaoks on erinevad `geom_`id, nt hajuvusdiagrammi saame funktsiooniga `geom_point`, joondiagrammi funktsiooniga `geom_line`).
+
+```{r}
+ggplot(data = ee9, mapping = aes(x = gincdif_ee, weight = pspwght)) +
+  geom_bar()
+```
+
+Kui soovime andmelünkade sagedust joonisel mitte näidata, saame andmelüngad eelnevalt lihtsalt välja filtreerida:
+
+```{r}
+library(tidyr) # kui R ütleb, et ei leia funktsiooni drop_na, siis saab sisse laadida paketi tidyr
+
+ee9 |> 
+  drop_na(gincdif_ee) |> 
+  ggplot(mapping = aes(x = gincdif_ee, weight = pspwght)) +
+    geom_bar()
+```
+
+Kui soovime y-teljel mitte indiviidide arvu, vaid protsente, siis tuleb täpsustada funktsiooni `aes` argumendi `y` väärtus `after_stat(prop)` -- funktsiooniga `after_stat` esitatakse joonise aluseks olevad andmed mingi statistilise teisenduse alusel, `prop` määrabki ära, et soovime indiviidide arvud teisendada osakaaludeks. Argument `group = 1` tuleb lisada, et defineerida, et osakaale ei arvutata mingite gruppide lõikes, vaid kõigi viie kategooria osakaalud annavad kokku 1 ehk 100%. Funktsiooniga `labs` saame lisada joonise pealkirja, alapealkirja ja telgede nimed.
+
+```{r}
+ee9 |> 
+  drop_na(gincdif_ee) |> 
+  ggplot(mapping = aes(x = gincdif_ee, y = after_stat(prop), group = 1, weight = pspwght)) +
+    geom_bar() +
+    labs(title = "Valitsus peaks rakendama abinõusid, vähendamaks erinevusi sissetulekute \ntasemes: hinnangute protsentjaotus",
+         subtitle = "Euroopa Sotsiaaluuringu 2018. aasta Eesti andmed",
+         x = "Nõustumine väitega",
+         y = "Osakaal")
+```
+
+Kui soovime protsentjaotusi grupiti, nt soo lõikes, siis tuleb defineerida `group = gndr_ee` ning et eristus soo alusel ka värvidega nähtav oleks, siis `fill = gndr_ee`. Kuna joonisele lisandub tulpade eristus värvi alusel, lisandub joonise paremasse äärde ka legend; selle pealkirja saame ära muuta funktsiooni `labs` argumendiga `colour`.
+
+```{r}
+ggplot(ee9 |> drop_na(gincdif_ee), aes(x = gincdif_ee, y = after_stat(prop), group = gndr_ee, fill = gndr_ee, weight = pspwght)) +
+  geom_bar() +
+    labs(title = "Valitsus peaks rakendama abinõusid, vähendamaks erinevusi sissetulekute \ntasemes: hinnangute protsentjaotus",
+         subtitle = "Euroopa Sotsiaaluuringu 2018. aasta Eesti andmed",
+         x = "Nõustumine väitega",
+         y = "Osakaal",
+         fill = "Sugu")
+```
+
+Meeste ja naiste tulpade teineteise otsa asetamine ei anna siiski head tulemust, sest protsendid on arvutatud soo lõikes, st meeste ja naiste kohta eraldi. Nii ei anna näiteks joonisel olev info, et väitega nõustuvate meeste ja naiste protsentide summa on ligi 100%, meile mingit sisulist infot. Asetame meeste ja naiste tulbad kõrvuti, lisades argumendi `position = "dodge"`. Viimase rea käsuga seadistame ka y-telje skaalaks murdarvude asemel protsentide esitamise (selle toimimiseks peab olema installeeritud pakett `scales`, mida kasutasime esimeses praktikumis).
+
+```{r}
+ggplot(ee9 |> drop_na(gincdif_ee), aes(x = gincdif_ee, y = after_stat(prop), group = gndr_ee, fill = gndr_ee, weight = pspwght)) +
+  geom_bar(position = "dodge") +
+    labs(title = "Valitsus peaks rakendama abinõusid, vähendamaks erinevusi sissetulekute \ntasemes: hinnangute protsentjaotus",
+         subtitle = "Euroopa Sotsiaaluuringu 2018. aasta Eesti andmed",
+         x = "Nõustumine väitega",
+         y = "Osakaal",
+         fill = "Sugu") +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+</details>
