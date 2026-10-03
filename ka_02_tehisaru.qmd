@@ -1,0 +1,72 @@
+---
+title: "Tehisaru kasutamine käesolevas kursuses"
+format: 
+  clean-revealjs:
+    transition: slide
+    incremental: false
+    embed-resources: true
+html-math-method:
+  method: mathjax
+author:
+  - name: Indrek Soidla
+    email: indrek.soidla@ut.ee
+    affiliations: Tartu Ülikool
+date: last-modified
+execute: 
+  echo: true
+lang: et
+engine: knitr
+---
+
+## Tehisaruga töötamise põhimõtted selles kursuses
+
+```{css, echo = FALSE}
+ul li {
+    font-size: 26px;
+}
+
+p.caption {
+  font-size: 0.5em;
+  font-style: italic;
+}
+```
+
+- Kui annate tehisarule juhiseid, mis pole eriti läbi mõeldud, võite saada väljundi, mis ei täida oma eesmärki või on madala kvaliteediga.
+- Heade tulemuste saamiseks võib olla vaja päringuid täiustada, see omakorda nõuab tööd.
+- Lähtuge alati põhimõttest, et kõike, mida tehisaru ütleb, tuleb kontrollida (päriselt ka).
+  - Kui see annab teile koodi või koodi tõlgenduse või mis tahes muu tulemuse, eeldage, et see on vigane, isegi kui kood ei anna R-s veateadet.
+  - Õiget tulemust saate eeldada juhul, kui saate täpselt aru, mida kood teeb ja olete kindlaks teinud, et kood annab korrektse väljundi.
+  - Seda saate teha, uurides koodi ja selle väljundit, sh vaheväljundeid, kui kood koosneb mitmest käsust; uurides koodis kasutatavaid funktsioone, nt guugeldades või uurides funktsioonide abifaile.
+  - Kasutades tehisaru poolt "öeldut", vastutate kõigi selle poolt tehtud vigade või puuduste eest ise.
+- Tehisaru kasutuse eesmärk ei peaks olema pelgalt ajakulu vähendada (see võib olla üks eesmärkidest), oluline on sellest ka midagi õppida, nii sisuliselt kui ka oma tehisaru kasutuse kohta, viimase puhul on loodetavasti abiks järgneval slaidil kirjeldatu
+
+## Tehisaruga töötamise põhimõtted selles kursuses
+
+- Käesolevas kursuses on lubatud tehisaru kasutada (kui ülesandes pole öeldud teisiti), aga selle kasutamise üle tuleb reflekteerida. Palun lisage iga ülesande lahenduse või esitatud töö lõppu osa nelja punktiga, mis selgitab,
+
+  1. milliste ülesande osade puhul te tehisaru kasutasite
+  2. milliseid päringuid te tulemuste saamiseks kasutasite
+    - kui päringuid oli vähe, saate need välja tuua; kui päringuid oli palju, püüdke kokkuvõtvalt välja tuua, mida püüdsite nendega saavutada ja tooge päringutest näiteid
+  3. kuidas see teil aitas või ei aidanud ülesannet lahendada, milliseid muudatusi oma koodis tegite
+    - oluline on ka läbi mõelda ja välja tuua, mille puhul tehisarust ei olnud kasu või kus te tehisaruga mõttevahetusest hoolimata vajaliku lahenduseni ei jõudnud
+  4. kuidas püüdsid kontrollida, et tehisaru antud lahendus on õige
+
+## Tehisaruga töötamise põhimõtted selles kursuses
+
+- Eelkirjeldatu tegemata jätmine läheb vastuollu akadeemilise hea tava põhimõtetega.
+- NB! TI kasutuse refleksioon peab olema **enda kirjutatud** (mitte lastud tehisarul kirjutada)
+- Eelnevad põhimõtted on kohandatud artiklist Mollick, E. (2023, February 17). My class required AI. Here's what I've learned so far. *One Useful Thing.* https://www.oneusefulthing.org/p/my-class-required-ai-heres-what-ive
+
+## Tehisaruga töötamise põhimõtted selles kursuses
+
+- Kui ülesande lahendus on saadud suuresti tehisarult, võib tekkida kiusatus tehisaru kasutuse refleksioon "unustada" või kasutuse ulatust pisendada
+- Tegelikult pole selleks põhjust, sest tehisaru kasutus on lubatud; tehisaru kasutus ise ei anna miinuspunkte
+- Hinnet alandab hoopis see, kui tehisaru antud väljundit pole kriitiliselt hinnatud, st pole veendutud, et TI antud lahendus on õige, ega kasutust kirjeldatud
+  - Selle väljamõtlemine, kuidas veenduda, et tehisaru antud lahendus on õige, võib nõuda omajagu mõttetööd, aga arvestades, et tehisaru on ülesande lahendamisel juba osa tööd ära teinud, on see nõue õigustatud
+- Halvim lahendus, mille saab esitada, on see, kus tehisaru kasutust pole kirjeldatud ega seda kriitiliselt hinnatud, nii et saadud tulemus on vale
+- Sellega võrreldes pea sama kehv on lahendus, mille tulemus on õige, ent tehisaru kasutust pole kirjeldatud
+- Hoopis parem lahendus on selline, kus tehisaru abiga pole küll õige lahenduseni jõutud, ent tehisaru kasutust on selgelt kirjeldatud ja on aru saadud, et tehisaru antud väljund on vigane
+
+## Tehisaruga töötamise põhimõtted selles kursuses
+
+- NB! Tehisaru kasutuse kirjeldamine ei ole n-ö vabatahtlik ülesande osa, mille võib ajapuudusel ära jätta; ülesande lahendamisel tehisaru kasutades muutub kasutuse kirjeldamine ülesande kohustuslikuks osaks
