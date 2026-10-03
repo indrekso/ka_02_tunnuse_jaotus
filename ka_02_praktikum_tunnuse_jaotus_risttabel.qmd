@@ -32,6 +32,8 @@ library(tidyverse)
 library(summarytools)
 ```
 
+Esimesed kolm ülesannet on omavahel seotud ja käsitlevad eelkõige andmetöötluse tehnilist poolt.
+
 ## Ülesanne 2.1
 
 ::: {.panel-tabset}
@@ -54,7 +56,7 @@ demo %>%
   summarise(syndide_arv = sum(syndide_arv))
 ```
 
-Proovige arvutada surmade arv maakonniti.
+Proovige arvutada surmade arv maakonniti. Kui käsk annab veateate, uurige edasi paanilt *Vihje.*
 
 ### Vihje
 
@@ -133,9 +135,10 @@ class(demo$surnute_arv)
 
 Milles on probleem täpsemalt? Kui vaatate käsuga `View(demo)` andmestiku sisu, siis tunnuses `surnute_arv` ilmselt (vähemalt esialgu) midagi kahtlast silma ei hakka -- tunnuse väärtused on ju arvude moodi. Et tunnus on tekstitüüpi, näitab küll see, et "arvud" on selles tunnuses joondunud lahtrite vasakusse serva, samas kui arvulised väärtused oleksid joondatud paremasse serva (samasugune eristus esineb ka Excelis). Tuletagem jälle praktikumieelsest materjalist meelde, et erinevat tüüpi väärtuste esinemisel tunnuses antakse R-s kogu tunnusele n-ö üldisem tüüp, seega arvude ja tekstiliste väärtuste koos esinemisel käsitletakse kõiki väärtuseid tunnuses tekstina. Kui lähemalt tunnuses olevaid väärtuseid silmitseda, ilmneb, et Alutaguse valla puhul on surnute arv "89,0" -- see ei ole tavaline murdarv, sest R-s on vaikeseadena murdarvud punktiga, mitte komaga. Kui arvus esineb koma, ei ole see R-i jaoks arv, vaid tekst. Selle tõttu käsitletakse ka kõiki tunnuses olevaid väärtuseid automaatselt tekstina.
 
-Kuidas saada tekstiline tunnus arvuliseks? Praktikumieelsest materjalist tuleb ehk meelde, et selleks saab kasutada funktsiooni `as.numeric`. Kasutades `dplyr`'i võimalusi, saaksime tunnust muuta funktsiooni `mutate` abil:
+Kuidas saada tekstiline tunnus arvuliseks? Praktikumieelsest materjalist tuleb ehk meelde, et selleks saab kasutada funktsiooni `as.numeric`. Kasutades `dplyr`'i võimalusi, saaksime tunnust muuta funktsiooni `mutate` abil (sealjuures omistame muudetud kujul andmestiku igaks juhuks uuele objektile `demo_as_num`):
 
 ```{r}
+#| warning: true
 demo_as_num <- demo %>% 
   mutate(surnute_arv = as.numeric(surnute_arv))
 ```
@@ -163,7 +166,7 @@ demo_as_num %>%
   summarise(surmade_arv = sum(surnute_arv, na.rm = TRUE))
 ```
 
-Ilmselt võime eeldada, et Alutaguse valla algne väärtus surnute arvu tunnuses "89,0" tähendas väärtust 89. Seega saaksime praeguse `NA` asendada ise väärtusega 89. Kuidas seda teha? Saaksime näiteks seada tingimuse: kui tegu on Alutaguse vallaga, siis muudame vastaval real tunnuse `surnute_arv` väärtuseks 89, kui tegu ei ole Alutaguse vallaga, jäävad väärtused samaks. Selleks saab kasutada erinevaid funktsioone, nt `case_when` või antud juhul sobiks ka `case_match`, aga saab ka kasutada eelnevalt vihjatud funktsiooni `ifelse`, mis töötab samamoodi nagu funktsioon IF Excelis: kolm argumenti, millest esimene on tingimus, teisega seadistame, mis saab siis, kui tingimus on täidetud, ja kolmandaga, mis saab siis, kui tingimus ei ole täidetud. 
+Ilmselt võime eeldada, et Alutaguse valla algne väärtus surnute arvu tunnuses "89,0" tähendas väärtust 89. Seega saaksime praeguse `NA` asendada ise väärtusega 89. Kuidas seda teha? Saaksime näiteks seada tingimuse: kui tegu on Alutaguse vallaga, siis muudame vastaval real tunnuse `surnute_arv` väärtuseks 89, kui tegu ei ole Alutaguse vallaga, jäävad väärtused samaks. Selleks saab kasutada erinevaid funktsioone, nt `case_when`, aga saab ka kasutada eelnevalt vihjatud funktsiooni `ifelse`, mis töötab samamoodi nagu funktsioon IF Excelis: kolm argumenti, millest esimene on tingimus, teisega seadistame, mis saab siis, kui tingimus on täidetud, ja kolmandaga, mis saab siis, kui tingimus ei ole täidetud. 
 
 Nagu ikka, kui soovime mingit tunnust `data frame`'is muuta, saame selleks kasutada funktsiooni `mutate`. Muudame sealjuures kogu tunnuse `surnute_arv` arvuliseks tunnuseks, sest tekstilisse tunnusesse Alutaguse vallale väärtust 89 omistades muutuks seegi muidu tekstiliseks väärtuseks. 
 
@@ -226,7 +229,7 @@ demo_parandatud %>%
 
 ### Ülesanne 
 
-Laeme sisse tööks vajalikud andmed, need on samad Euroopa Sotsiaaluuringu 9. küsitluslaine andmed aastast 2018, mis praktikumieelsetes materjalides.
+Laadige sisse edaspidiseks tööks vajalikud andmed, need on samad Euroopa Sotsiaaluuringu 9. küsitluslaine andmed aastast 2018, mis praktikumieelsetes materjalides.
 
 ```{r}
 r9 <- read_spss("data/ESS9e03_1.sav")
@@ -242,13 +245,13 @@ Pärast ümberkodeerimist kontrollige, kas ümberkodeerimine sai õigesti tehtud
 
 ### Vihje
 
-Et veenduda, millised on kategooriate koodid ja nimetused andmestikus, saab kasutada funktsiooni `distinct` või `count`. Tunnuse väärtuste ümberkodeerimiseks saab kasutada paketi `dplyr` funktsiooni `case_match`. Saab kasutada ka sama paketi funktsiooni `case_when`, aga kuna tegu on sisuliselt kategoriaalse tunnusega, on `case_match` siinkohal lihtsam variant. Et kontrollida, kas ümberkodeerimine töötab õigesti, saate teha sagedustabeli enne ja pärast ümberkodeerimist.
+Et veenduda, millised on kategooriate koodid ja nimetused andmestikus, saab kasutada funktsiooni `distinct` või `count`. Tunnuse väärtuste ümberkodeerimiseks saab kasutada paketi `dplyr` funktsiooni `recode_values`. Saab kasutada ka sama paketi funktsiooni `case_when`, aga kuna tegu on sisuliselt kategoriaalse tunnusega, on `recode_values` siinkohal lihtsam variant. Et kontrollida, kas ümberkodeerimine töötab õigesti, saate teha sagedustabeli enne ja pärast ümberkodeerimist.
 
-### Vihje 2
+### Vihje
 
-Selleks, et tunnuse kategooriate järjestus jääks samas, mis algtunnuses, saab algtunnuse ümberkodeerimisel muuta faktortunnuseks `case_match` argumendi `.ptype` ja funktsiooni `factor` abil.
+Selleks, et tunnuse kategooriate järjestus jääks samas, mis algtunnuses, saab algtunnuse ümberkodeerimisel muuta faktortunnuseks `recode_values` argumendi `ptype` ja funktsiooni `factor` abil.
 
-### Vihje 3
+### Vihje
 
 Ümberkodeerimise õigsust saab kontrollida nt funktsiooniga `count`.
 
@@ -263,19 +266,19 @@ r9 %>%
 
 Kontrollime, kas ümberkodeerimine töötas õigesti.
 
-```{r aesfdrk_case_match, echo = FALSE}
+```{r aesfdrk_recode_values, echo = FALSE}
 r9 <- r9 %>% 
-  mutate(aesfdrk2 = case_match(aesfdrk,
+  mutate(aesfdrk_ee = recode_values(aesfdrk,
                           1 ~ "Väga turvaliselt",
                           2 ~ "Turvaliselt",
                           3 ~ "Mitte eriti turvaliselt",
                           4 ~ "Üldse mitte turvaliselt",
-                          .ptype = factor(levels = c("Väga turvaliselt",
-                                                     "Turvaliselt",
-                                                     "Mitte eriti turvaliselt",
-                                                     "Üldse mitte turvaliselt"))))
+                          ptype = factor(levels = c("Väga turvaliselt",
+                                                    "Turvaliselt",
+                                                    "Mitte eriti turvaliselt",
+                                                    "Üldse mitte turvaliselt"))))
 r9 %>% 
-  count(aesfdrk, aesfdrk2)
+  count(aesfdrk, aesfdrk_ee)
 ```
 
 :::
@@ -293,7 +296,7 @@ Kui suur osa Eesti vastajatest arvas, et tunneksid end pimedal ajal kodu ümbrus
 Küsimusele saab vastata, eraldades algandmestikust Eesti andmed ja koostades tunnuse `aesfdrk` jaotuse. 
 Kasutades selleks funktsiooni `count`, läheb protsentjaotuse arvutamiseks vaja funktsiooni `mutate`.
 
-### Vihje 2
+### Vihje
 
 ```{r eval = FALSE}
 ee9 <- r9 %>% 
@@ -321,7 +324,7 @@ ee9 <- r9 %>%
   filter(cntry == "EE")
 
 ee9 %>% 
-  count(aesfdrk2, wt = pspwght) %>% 
+  count(aesfdrk_ee, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100)
 ```
 
@@ -329,8 +332,8 @@ Kui soovime andmelünkade sageduse tabelist välja jätta, saame järgneva tabel
 
 ```{r echo = FALSE}
 ee9 %>% 
-  drop_na(aesfdrk2) %>% 
-  count(aesfdrk2, wt = pspwght) %>% 
+  drop_na(aesfdrk_ee) %>% 
+  count(aesfdrk_ee, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100)
 ```
 
@@ -354,50 +357,64 @@ Risttabeli saab moodustada funktsiooniga `ctable` paketist `summarytools`. Prots
 
 Kes jõudis praktikumieelse juhendmaterjali lõpust üle vaadata lisa risttabelite koostamise kohta paketiga `dplyr`, võib proovida lahendada ülesande `dplyr`'iga. Juhendmaterjalis ei olnud käsitletud seda, kuidas `dplyr`'iga koostada üldprotsentidega risttabelit. See on isegi lihtsam, sest jääb ära `group_by` käsk ja `count`-käsu argumentideks on nii rea- kui veerutunnus (ja kaalutunnus muidugi ka). Praktikas kasutatakse risttabelis üldprotsentide arvutamist harvem kui rea- või veeruprotsente, sest gruppide võrdlemine on üldprotsentide puhul keerulisem.
 
-Teadmiseks: funktsiooniga `group_by` andmestiku grupeerimise järel muudetakse väljundtabel tavalisest *data frame*'ist *tibble* formaati, mis kuigi palju *data frame*'ist ei erine, aga erineb näiteks selle poolest, et konsoolis esitatakse tabelist vaikeseadena ainult esimesed kümme rida ja nii palju veerge, kui palju konsooli mahub. Üks võimalus *tibble*'i puhul rohkem veerge väljundisse saada on konsooliakent hiirega laiemaks vedada, teine on lisada käsu lõppu funktsioon `print` argumendiga `width`, mille väärtuseks lisada esitatavate veergude arv või siis `Inf`, kui soovime kuvada kõiki andmestiku veerge (esitatavate ridade arvu määramiseks on argument `n`).  
+Teadmiseks: funktsiooniga `group_by` andmestiku grupeerimise järel muudetakse väljundtabel tavalisest *data frame*'ist *tibble* formaati, mis kuigi palju *data frame*'ist ei erine, aga erineb näiteks selle poolest, et konsoolis esitatakse tabelist vaikeseadena ainult esimesed kümme rida ja nii palju veerge, kui palju konsooli mahub. Üks võimalus *tibble*'i puhul rohkem veerge väljundisse saada on konsooliakent hiirega laiemaks vedada, teine on lisada käsu lõppu funktsioon `print` argumendiga `width`, mille väärtuseks lisada esitatavate veergude arv või siis `Inf`, kui soovime kuvada kõiki andmestiku veerge (esitatavate *ridade* arvu saab määrata samalaadselt argumendiga `n`).  
 
-### Tulemus
+<!-- ### Tulemus -->
 
-Funktsiooniga `summarytools::ctable`
+<!-- **1.** Funktsiooniga `summarytools::ctable` -->
 
 ```{r echo = FALSE}
+#| eval: false
 ee9 <- ee9 %>% 
-  mutate(region2 = sjlabelled::as_label(region, drop.levels = TRUE))
+  mutate(region_ee = sjlabelled::as_label(region, drop.levels = TRUE))
 
-ctable(ee9$region2, ee9$aesfdrk2, weight = ee9$pspwght, useNA = "no")
+ctable(ee9$region_ee, ee9$aesfdrk_ee, weight = ee9$pspwght, useNA = "no")
 
-ctable(ee9$region2, ee9$aesfdrk2, weight = ee9$pspwght, prop = "c", useNA = "no")
+ctable(ee9$region_ee, ee9$aesfdrk_ee, weight = ee9$pspwght, prop = "c", useNA = "no")
 
-ctable(ee9$region2, ee9$aesfdrk2, weight = ee9$pspwght, prop = "t", useNA = "no")
+ctable(ee9$region_ee, ee9$aesfdrk_ee, weight = ee9$pspwght, prop = "t", useNA = "no")
 ```
 
-Paketiga `dplyr`
+<!-- **2.** Paketiga `dplyr` -->
+
+<!-- Reaprotsendid -->
 
 ```{r echo = FALSE}
+#| eval: false
 ee9 %>% 
-  drop_na(aesfdrk2) %>% 
-  group_by(region2) %>% 
-  count(aesfdrk2, wt = pspwght) %>% 
+  drop_na(aesfdrk_ee) %>% 
+  group_by(region_ee) %>% 
+  count(aesfdrk_ee, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100) %>% 
   select(-n) %>% 
-  pivot_wider(names_from = aesfdrk2,
+  pivot_wider(names_from = aesfdrk_ee,
               values_from = protsent)
+```
 
+<!-- Veeruprotsendid -->
+
+```{r echo = FALSE}
+#| eval: false
 ee9 %>% 
-  drop_na(aesfdrk2) %>% 
-  group_by(aesfdrk2) %>% 
-  count(region2, wt = pspwght) %>% 
+  drop_na(aesfdrk_ee) %>% 
+  group_by(aesfdrk_ee) %>% 
+  count(region_ee, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100) %>% 
   select(-n) %>% 
-  pivot_wider(names_from = aesfdrk2,
+  pivot_wider(names_from = aesfdrk_ee,
               values_from = protsent)
+```
 
+<!-- Üldprotsendid -->
+
+```{r echo = FALSE}
+#| eval: false
 ee9 %>% 
-  drop_na(aesfdrk2) %>% 
-  count(region2, aesfdrk2, wt = pspwght) %>% 
+  drop_na(aesfdrk_ee) %>% 
+  count(region_ee, aesfdrk_ee, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100) %>% 
   select(-n) %>% 
-  pivot_wider(names_from = aesfdrk2,
+  pivot_wider(names_from = aesfdrk_ee,
               values_from = protsent)
 ```
 
@@ -421,7 +438,7 @@ Kõiki ülesande lahendamiseks vajalikke funktsioone oleme täna eelnevalt juba 
 balt9 <- r9 %>% 
   filter(cntry %in% c("EE", "LV", "LT"))
 
-ctable(balt9$cntry, balt9$aesfdrk2, weights = balt9$pspwght, useNA = "no")
+ctable(balt9$cntry, balt9$aesfdrk_ee, weights = balt9$pspwght, useNA = "no")
 ```
 
 Kui eelneva lahenduse puhul saite väljundisse lisaks Eestile, Lätile ja Leedule ka teiste riikide read (kus on küll ainult nullid, sest objektis `balt9` teiste riikide vastajate andmeid pole) nagu alloleval pildil, 
@@ -436,11 +453,11 @@ andmestiku_nimi <- andmestiku_nimi %>%
          )
 ```
 
-<!-- Kui on vaja riigi tunnusesse eestikeelseid nimesid, saab kasutada `sjlabelled::as_label` asemel funktsiooni `case_match`: -->
+<!-- Kui on vaja riigi tunnusesse eestikeelseid nimesid, saab kasutada `sjlabelled::as_label` asemel funktsiooni `recode_values`: -->
 
 ```{r echo = FALSE, eval = FALSE}
 balt9 <- balt9 %>% 
-  mutate(cntry2 = case_match(cntry,
+  mutate(cntry2 = recode_values(cntry,
                             "EE" ~ "Eesti",
                             "LT" ~ "Läti",
                             "LV" ~ "Leedu"))
@@ -449,16 +466,16 @@ balt9 <- balt9 %>%
 <!-- Eestikeelsete riiginimedega veeruprotsentidega tabel funktsiooniga `ctable` -->
 
 ```{r echo = FALSE, eval = FALSE}
-ctable(balt9$aesfdrk2, balt9$cntry2, weights = balt9$pspwght, useNA = "no", prop = "c")
+ctable(balt9$aesfdrk_ee, balt9$cntry2, weights = balt9$pspwght, useNA = "no", prop = "c")
 ```
 
 Paketiga `dplyr`
 
 ```{r echo = FALSE}
 balt9 %>% 
-  drop_na(aesfdrk2) %>% 
+  drop_na(aesfdrk_ee) %>% 
   group_by(cntry) %>% 
-  count(aesfdrk2, wt = pspwght) %>% 
+  count(aesfdrk_ee, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100) %>% 
   select(-n) %>% 
   pivot_wider(names_from = cntry,
@@ -481,31 +498,33 @@ Kui mingi seos kahe tunnuse vahel peaks ilmnema, kuidas seda sisuliselt mõtesta
 
 Ka käesolevas ülesandes kasutatavaid funktsioone oleme täna eelnevalt juba kasutanud.
 
-### Tulemus
+<!-- ### Tulemus -->
 
 ```{r echo = FALSE}
+#| eval: false
 ee9 <- ee9 %>% 
-  mutate(health3 = case_match(health, 
+  mutate(health4 = recode_values(health, 
                           1 ~ "Väga hea", 
                           2 ~ "Hea", 
                           3 ~ "Rahuldav", 
                           c(4, 5) ~ "Halb või väga halb", 
-                          .ptype = factor(levels = c("Väga hea", 
+                          ptype = factor(levels = c("Väga hea", 
                                                      "Hea", 
                                                      "Rahuldav", 
                                                      "Halb või väga halb"))))
 
-ctable(ee9$aesfdrk2, ee9$health3, weights = ee9$pspwght, useNA = "no", prop = "c")
+ctable(ee9$aesfdrk_ee, ee9$health4, weights = ee9$pspwght, useNA = "no", prop = "c")
 ```
 
 ```{r echo = FALSE}
+#| eval: false
 ee9 %>% 
-  drop_na(aesfdrk2) %>% 
-  group_by(health3) %>% 
-  count(aesfdrk2, wt = pspwght) %>% 
+  drop_na(aesfdrk_ee) %>% 
+  group_by(health4) %>% 
+  count(aesfdrk_ee, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100) %>% 
   select(-n) %>% 
-  pivot_wider(names_from = health3,
+  pivot_wider(names_from = health4,
               values_from = protsent)
 ```
 
@@ -517,26 +536,60 @@ ee9 %>%
 
 ### Küsimus
 
-Eelmises ülesandes ilmnenud seose üks seletus võiks olla, et kehvemalt hindavad oma tervis pigem vanemad inimesed ning võib-olla on ka vanematel inimestel rohkem hirme turvalisuse osas. Uurige, kas sellisel seletusel võiks olla tõepõhi all.
+Uurime ka tervisehinnangu seost sotsiaalse suhtluse sagedusega (tunnus `sclmeet`) Eesti vastajate andmete põhjal. Selle tunnuse sagedusjaotus oli ka ühes tänases testiülesandes. Koostage nüüd selle tunnuse sagedusjaotus ja uurige, kas mõnes kategoorias on liiga vähe indiviide, et usaldusväärseid järeldusi teha. Kodeerige selline/-se(d) kategooria(d) kokku kõrvaloleva kategooriaga.
 
 ### Vihje
 
-Üks võimalus seda kontrollida oleks kodeerida vanuse tunnus kategoriaalseks (nt viis kategooriat, uurige enne tunnuse `agea` kumulatiivse jaotuse põhjal, kuhu kategooriate piirid seada, et grupid oleksid enam-vähem ühesuurused) ja teha risttabel vanuse ja tervisehinnangu tunnustega ning risttabel vanuse ja turvalisuse hinnangu tunnustega. Kui mõlemast ilmneb seos, võib see seletus pädeda küll.
+Sagedusjaotuse tabeli loomiseks eriti midagi vihjata enam pole, neid funktsioone oleme juba kasutanud. Ümberkodeerimise puhul saab kasutada nii funktsiooni `recode_values` kui `case_when`, aga üks neist on siinkohal mõttekam kui teine (mõelge tunnuste tüüpidele). Millised kategooriad võiks indiviidide vähesuse tõttu kokku kodeerida, sõltub subjektiivsest hinnangust, siin otseselt selget kriteeriumi ei ole. Kindlasti võiks kokku kodeerida "Mitte kunagi" ja "Vähem kui kord kuus", kaaluda võiks ka "Iga päev" ja "Mitu korda nädalas" liitmist.
 
-### Tulemus
+```{r}
+ee9 |> 
+  count(sclmeet, wt = pspwght)
 
-Tunnuse `agea` kumulatiivne protsentjaotus (neljandas veerus) kategooriate võimalike piiride leidmiseks (siin ruumi kokkuhoiuks esitatud ainult kümme esimest rida)
+ee9 <- ee9 |> 
+  mutate(sclmeet6_ee = recode_values(sclmeet,
+                                    c(1, 2) ~ "Vähem kui kord kuus",
+                                    3 ~ "Kord kuus",
+                                    4 ~ "Mitu korda kuus",
+                                    5 ~ "Kord nädalas",
+                                    6 ~ "Mitu korda nädalas",
+                                    7 ~ "Iga päev",
+                                    ptype = factor(levels = c("Vähem kui kord kuus",
+                                                              "Kord kuus",
+                                                              "Mitu korda kuus",
+                                                              "Kord nädalas",
+                                                              "Mitu korda nädalas",
+                                                              "Iga päev"))))
+
+ctable(ee9$sclmeet6_ee, ee9$health4, weights = ee9$pspwght, useNA = "no")
+ctable(ee9$sclmeet6_ee, ee9$health4, weights = ee9$pspwght, useNA = "no", prop = "c")
+```
+
+
+<!-- ### Küsimus -->
+
+<!-- Eelmises ülesandes ilmnenud seose üks seletus võiks olla, et kehvemalt hindavad oma tervist pigem vanemad inimesed ning võib-olla on ka vanematel inimestel rohkem hirme turvalisuse osas. Uurige, kas sellisel seletusel võiks olla tõepõhi all. -->
+
+<!-- ### Vihje -->
+
+<!-- Üks võimalus seda kontrollida oleks kodeerida vanuse tunnus kategoriaalseks (nt viis kategooriat, uurige enne tunnuse `agea` kumulatiivse jaotuse põhjal, kuhu kategooriate piirid seada, et grupid oleksid enam-vähem ühesuurused) ja teha risttabel vanuse ja tervisehinnangu tunnustega ning risttabel vanuse ja turvalisuse hinnangu tunnustega. Kui mõlemast ilmneb seos, võib see seletus pädeda küll. -->
+
+<!-- ### Tulemus -->
+
+<!-- Tunnuse `agea` kumulatiivne protsentjaotus (neljandas veerus) kategooriate võimalike piiride leidmiseks (siin ruumi kokkuhoiuks esitatud ainult kümme esimest rida) -->
 
 ```{r echo = FALSE}
+#| eval: false
 ee9 %>% 
   count(agea, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100,
          kum_protsent = cumsum(protsent))
 ```
 
-Risttabelid paketiga `summarytools`:
+<!-- Risttabelid paketiga `summarytools`: -->
 
 ```{r echo = FALSE}
+#| eval: false
 ee9 <- ee9 %>% 
   mutate(vanus = case_when(agea <= 30 ~ "15-30",
                            agea <= 45 ~ "31-45",
@@ -544,31 +597,46 @@ ee9 <- ee9 %>%
                            agea <= 75 ~ "61-75",
                            agea > 75 ~ "76+"))
 
-ctable(ee9$vanus, ee9$health3, weights = ee9$pspwght, useNA = "no")
-ctable(ee9$vanus, ee9$aesfdrk2, weights = ee9$pspwght, useNA = "no")
+ctable(ee9$vanus, ee9$health4, weights = ee9$pspwght, useNA = "no")
+ctable(ee9$vanus, ee9$aesfdrk_ee, weights = ee9$pspwght, useNA = "no")
 ```
 
-Risttabelid paketiga `dplyr`:
+<!-- Risttabelid paketiga `dplyr`: -->
 
 ```{r echo = FALSE}
+#| eval: false
 ee9 %>% 
-  drop_na(health3) %>% 
+  drop_na(health4) %>% 
   group_by(vanus) %>% 
-  count(health3, wt = pspwght) %>% 
+  count(health4, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100) %>% 
   select(-n) %>% 
   pivot_wider(names_from = vanus,
               values_from = protsent)
 
 ee9 %>% 
-  drop_na(aesfdrk2) %>% 
+  drop_na(aesfdrk_ee) %>% 
   group_by(vanus) %>% 
-  count(aesfdrk2, wt = pspwght) %>% 
+  count(aesfdrk_ee, wt = pspwght) %>% 
   mutate(protsent = n / sum(n) * 100) %>% 
   select(-n) %>% 
   pivot_wider(names_from = vanus,
               values_from = protsent)
   
 ```
+
+:::
+
+## Ülesanne 2.10
+
+::: {.panel-tabset}
+
+### Küsimus
+
+Uurige nüüd risttabeli põhjal, kas tervisehinnangu ja sotsiaalse suhtluse sageduse vahel esineb Eesti vastajate seas mingit laadi seos ja milline see on. Kasutage ümberkodeeritud tunnuseid, st neljakategoorialist tervisehinnangu tunnust ja eelmises ülesandes ümberkodeeritud sotsiaalse suhtluse sageduse tunnust. Mõelge ka, kuidas oleks mõttekas siin protsendid arvutada (st mis tüüpi protsente uurida) ja mida nende alusel järeldada saab.
+
+### Vihje
+
+Tehniliselt on ilmselt asjad juba tuttavad. Sisulises plaanis võiks järgida põhimõtet, et kui reatunnuseks on n-ö objektiivsemalt mõõdetud tunnus (nt mingi sotsiaaldemograafiline tunnus) ja veerutunnuseks subjektiivsem tunnus, siis on mõttekam uurida reaprotsente. Sama kehtib juhul, kui on alust eeldada, et pigem võib reatunnus mõjutada veerutunnust. Antud juhul on isegi keeruline nende kriteeriumide alusel tunnuseid liigitada, nii et sisukaid järeldusi võivad võimaldada nii rea- kui veeruprotsendid.
 
 :::
